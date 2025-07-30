@@ -17,14 +17,14 @@ public class User {
     @Size(min = 6, message = "must be more than 5 length long")
     private String username;
 
-    //@Pattern(regexp = "^(?=.[0-9])(?=.[a-z])(?=.[A-Z])(?=.[!@#&()–[{}]:;',?/*~$^+=<>]).{8,20}$")
+    @Pattern(regexp = "^(?=.[0-9])(?=.[a-z])(?=.[A-Z])(?=.[!@#&()–[{}]:;',?/*~$^+=<>]).{8,20}$")
     private String password;
 
     @NotEmpty(message = "email must be not empty !")
     @Email(message = "must be valid email")
     private String email;
 
-    @Pattern(regexp = ("Admin|Customer|VIP"))
+    @Pattern(regexp = ("Admin|Customer"))
     private String role;
 
     @NotNull(message = "balance must be not null")

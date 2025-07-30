@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/user")
 public class ControllerUser {
-    private final ServiceProduct serviceProduct;
+
     private final ServiceUser serviceUser;
 
     @GetMapping("/get")
@@ -64,9 +64,22 @@ public class ControllerUser {
             return ResponseEntity.status(404).body(new ApiResponse("Purchase failed: Check IDs, balance, or stock."));
         }
     }
+    @PostMapping("/rate/{id}")
+    public ResponseEntity<?> rateProduct(@PathVariable String id, @RequestParam double rating, @RequestParam String userId) {
+
+        if (rating < 0 || rating > 5)
+            return ResponseEntity.status(400).body(new ApiResponse("Rating must be between 0 and 5"));
+
+        boolean rated = serviceUser.rateProduct(id, rating, userId);
+
+        if (!rated)
+            return ResponseEntity.status(403).body(new ApiResponse("You must buy the product before rating"));
+
+        return ResponseEntity.status(200).body(new ApiResponse("Product rated successfully"));
+    }
+
 
     //endpoint 2
-
     @PostMapping("/redeem/{userId}")
     public ResponseEntity<?> redeemPoints(@PathVariable String userId, @RequestParam int points) {
         boolean success = serviceUser.redeemPoints(userId, points);
@@ -76,26 +89,6 @@ public class ControllerUser {
         }
 
         return ResponseEntity.status(200).body(new ApiResponse("Points redeemed successfully"));
-    }
-
-    //endpoint 3
-    @PutMapping("/changeRole/{adminId}/{userId}")
-    public ResponseEntity<?> changeUserRole(@PathVariable String adminId, @PathVariable String userId, @RequestParam String newRole) {
-        boolean success = serviceUser.changeUserRole(adminId, userId, newRole);
-        if (!success) {
-            return ResponseEntity.status(403).body(new ApiResponse(" Only admin can change roles or user not found"));
-        }
-        return ResponseEntity.status(200).body(new ApiResponse("Role updated successfully"));
-    }
-
-    //endPoint 4
-    @PostMapping("/rewardRandomBuyer")
-    public ResponseEntity<?> rewardRandomBuyer(@RequestParam int maxPoints) {
-        boolean success = serviceUser.rewardRandomBuyer(maxPoints);
-        if (!success) {
-            return ResponseEntity.status(404).body(new ApiResponse("No buyers found"));
-        }
-        return ResponseEntity.status(200).body(new ApiResponse("Random buyer rewarded successfully"));
     }
 
 

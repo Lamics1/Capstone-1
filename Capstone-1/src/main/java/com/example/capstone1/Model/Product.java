@@ -29,4 +29,6 @@ public class Product {
     @NotNull
     @PositiveOrZero(message = "ratingCount must be 0 or more")
     private int ratingCount = 0;
+//4
+    private int soldCount;
 }

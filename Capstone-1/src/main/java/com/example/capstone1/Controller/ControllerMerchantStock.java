@@ -1,5 +1,6 @@
 package com.example.capstone1.Controller;
 import com.example.capstone1.Api.ApiResponse;
+import com.example.capstone1.Model.Merchant;
 import com.example.capstone1.Model.MerchantStock;
 import com.example.capstone1.Service.ServiceMerchant;
 import com.example.capstone1.Service.ServiceMerchantStock;
@@ -8,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,6 +22,16 @@ private final ServiceMerchantStock serviceMerchantStock;
     @GetMapping("/get")
     public ResponseEntity<?> GetAllMerchantStock() {
         return ResponseEntity.status(200).body(serviceMerchantStock.GetAllMerchantStock());
+    }
+    @PostMapping("/add-direct")
+    public ResponseEntity<?> AddStock(@RequestBody @Valid MerchantStock merchantStock, Errors errors) {
+
+        if (errors.hasErrors()) {
+            return ResponseEntity.status(400).body(errors.getFieldError().getDefaultMessage());
+        }
+
+        serviceMerchantStock.AddStock(merchantStock);
+        return ResponseEntity.status(200).body(new ApiResponse("Stock added directly"));
     }
 
     @PostMapping("/add")
@@ -53,6 +66,20 @@ private final ServiceMerchantStock serviceMerchantStock;
             return ResponseEntity.status(200).body(new ApiResponse("MerchantStock deleted"));
         }
         return ResponseEntity.status(404).body(new ApiResponse("MerchantStock not found"));
+    }
+
+    //end point 3
+
+    @GetMapping("/low-stock-merchants")
+    public ResponseEntity<?> getMerchantsWithLowStock(@RequestParam int threshold) {
+
+        ArrayList<Merchant> merchants = serviceMerchantStock.getMerchantsWithLowStock(threshold);
+
+        if (merchants.isEmpty()) {
+            return ResponseEntity.status(404).body(new ApiResponse("No merchants with low stock"));
+        }
+
+        return ResponseEntity.status(200).body(merchants);
     }
 
 }

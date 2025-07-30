@@ -21,9 +21,9 @@ public class ControllerMerchant {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> AddMerchant(@Valid @RequestBody Merchant merchant , Errors errors){
+    public ResponseEntity<?> AddMerchant(@Valid @RequestBody Merchant merchant, Errors errors) {
 
-        if (errors.hasErrors()){
+        if (errors.hasErrors()) {
             return ResponseEntity.status(404).body(errors.getFieldError().getDefaultMessage());
         }
         serviceMerchant.AddMerchant(merchant);
@@ -35,7 +35,7 @@ public class ControllerMerchant {
         if (errors.hasErrors()) {
             return ResponseEntity.status(404).body(errors.getFieldError().getDefaultMessage());
         }
-        boolean isUpdate =serviceMerchant.updateMerchant(id,merchant);
+        boolean isUpdate = serviceMerchant.updateMerchant(id, merchant);
         if (isUpdate) {
             return ResponseEntity.status(200).body(new ApiResponse("Merchant update"));
         }
@@ -43,28 +43,14 @@ public class ControllerMerchant {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteMerchant(@PathVariable String id){
+    public ResponseEntity<?> deleteMerchant(@PathVariable String id) {
 
         boolean isDeleted = serviceMerchant.DeleteMerchant(id);
-        if (isDeleted){
+        if (isDeleted) {
             return ResponseEntity.status(200).body(new ApiResponse("Merchant deleted"));
         }
         return ResponseEntity.status(404).body(new ApiResponse("Merchant not found"));
     }
-
-//endPoint
-
-//
-//    @PutMapping("/block/{adminId}/{merchantId}")
-//    public ResponseEntity<?> blockMerchant(@PathVariable String adminId, @PathVariable String merchantId, @RequestParam boolean block) {
-//        boolean success = serviceMerchant.blockMerchant(adminId, merchantId, block);
-//        if (!success) {
-//            return ResponseEntity.status(403).body(new ApiResponse("Access Denied or merchant not found"));
-//        }
-//        return ResponseEntity.status(200).body(new ApiResponse(block ? "Merchant blocked" : "Merchant unblocked"));
-//    }
 }
-
-
 
 

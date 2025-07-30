@@ -1,4 +1,5 @@
 package com.example.capstone1.Service;
+import com.example.capstone1.Model.Category;
 import com.example.capstone1.Model.Merchant;
 import com.example.capstone1.Model.User;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +9,6 @@ import java.util.ArrayList;
 @RequiredArgsConstructor
 @Service
 public class ServiceMerchant {
-
 
     ArrayList<Merchant> merchants = new ArrayList<>();
 
@@ -41,23 +41,5 @@ public class ServiceMerchant {
         }
         return false;
     }
-
-    //endPoint
-//
-//    public boolean blockMerchant(String adminId, String merchantId, boolean block) {
-//
-//        User admin = serviceUser.getUserById(adminId);
-//        if (admin == null || !"Admin".equalsIgnoreCase(admin.getRole())) {
-//            return false;
-//        }
-//
-//        for (Merchant m : merchants) {
-//            if (m.getId().equalsIgnoreCase(merchantId)) {
-//                m.setBlocked(block);
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
 
 }

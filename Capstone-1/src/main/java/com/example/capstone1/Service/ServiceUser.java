@@ -1,4 +1,5 @@
 package com.example.capstone1.Service;
+import com.example.capstone1.Model.Category;
 import com.example.capstone1.Model.MerchantStock;
 import com.example.capstone1.Model.Product;
 import com.example.capstone1.Model.User;
@@ -69,7 +70,8 @@ public class ServiceUser {
 
     public boolean buyProduct(String userId, String productId, String merchantId) {
         User user = getUserById(userId);
-        if (user == null) return false;
+        if (user == null)
+            return false;
 
         Product product = null;
         for (Product p : serviceProduct.products) {
@@ -91,12 +93,9 @@ public class ServiceUser {
             return false;
         if (stock.getStock() <= 0)
             return false;
-//DisCount VIP
+
         double finalPrice = product.getPrice();
-        if ("VIP".equalsIgnoreCase(user.getRole())) {
-            double discount = (user.getDiscountPercentage() / 100.0) * product.getPrice();
-            finalPrice = product.getPrice() - discount;
-        }
+
 
         if (user.getBalance() < finalPrice)
             return false;
@@ -104,75 +103,70 @@ public class ServiceUser {
         user.setBalance(user.getBalance() - finalPrice);
         stock.setStock(stock.getStock() - 1);
 
+        product.setSoldCount(product.getSoldCount() + 1);
 
         int earnedPoints = (int) (finalPrice / 10);
         user.setLoyaltyPoints(user.getLoyaltyPoints() + earnedPoints);
         //
         user.setHasPurchased(true);
         //
-        return true;
-    }
-
-//endPoint 2
-    public boolean redeemPoints(String userId, int pointsToRedeem) {
-
-        User user = getUserById(userId);
-        if (user == null) {
-            return false;
-        }
-
-        if (pointsToRedeem <= 0 || pointsToRedeem > user.getLoyaltyPoints()) {
-            return false;
-        }
-
-
-        double amountToAdd = (pointsToRedeem / 100.0) * 10;
-
-        user.setBalance(user.getBalance() + amountToAdd);
-
-        user.setLoyaltyPoints(user.getLoyaltyPoints() - pointsToRedeem);
 
         return true;
     }
 
-    //endPoint 3
-    public boolean changeUserRole(String adminId, String userId, String newRole) {
+    public boolean rateProduct(String productId, double rating, String userId) {
 
-        User admin = getUserById(adminId);
-        if (admin == null || !"Admin".equalsIgnoreCase(admin.getRole())) {
-            return false;
+        for (int i = 0 ; i<users.size();i++) {
+            if (users.get(i).getId().equalsIgnoreCase(userId)) ;
+            return true;
         }
 
-        User user = getUserById(userId);
-        if (user == null) {
-            return false;
+        boolean boughtThisProduct = false;
+        for (MerchantStock ms : serviceMerchantStock.GetAllMerchantStock()) {
+            if (ms.getProductId().equalsIgnoreCase(productId)) {
+                    boughtThisProduct = true;
+                    break;
+                }
+            }
+
+
+        if (!boughtThisProduct) {
+            return true;
         }
 
-        user.setRole(newRole);
 
-        if ("VIP".equalsIgnoreCase(newRole)) {
-            user.setDiscountPercentage(10.0);
-        } else {
-            user.setDiscountPercentage(0);
+        for (Product p : serviceProduct.products) {
+            if (p.getId().equalsIgnoreCase(productId)) {
+                p.setTotalRating(p.getTotalRating() + rating);
+                p.setRatingCount(p.getRatingCount() + 1);
+                return true;
+            }
         }
 
-        return true;
+        return false;
     }
 
-    //endPoint4
-    public boolean rewardRandomBuyer(int maxPoints) {
-        ArrayList<User> buyers = getUsersWhoPurchased();
-        if (buyers.isEmpty())
-            return false;
 
-        Random random = new Random();
-        int index = random.nextInt(buyers.size());
-        User winner = buyers.get(index);
+    //endPoint 2
+            public boolean redeemPoints (String userId,int pointsToRedeem){
 
-        int points = random.nextInt(maxPoints) + 1;
-        winner.setLoyaltyPoints(winner.getLoyaltyPoints() + points);
+                User user = getUserById(userId);
+                if (user == null) {
+                    return false;
+                }
 
-        return true;
-    }
-}
+                if (pointsToRedeem <= 0 || pointsToRedeem > user.getLoyaltyPoints()) {
+                    return false;
+                }
 
+
+                double amountToAdd = (pointsToRedeem / 100.0) * 10;
+
+                user.setBalance(user.getBalance() + amountToAdd);
+
+                user.setLoyaltyPoints(user.getLoyaltyPoints() - pointsToRedeem);
+
+                return true;
+            }
+
+        }

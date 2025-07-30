@@ -14,6 +14,9 @@ private final ServiceProduct serviceProduct ;
 
     ArrayList<MerchantStock> merchantStocks = new ArrayList<>();
 
+    public void AddStock(MerchantStock merchantStock) {
+        merchantStocks.add(merchantStock);
+    }
     public boolean addMerchantStock(MerchantStock merchantStock) {
         // product
         for (int i = 0; i < serviceProduct.products.size(); i++) {
@@ -52,6 +55,35 @@ private final ServiceProduct serviceProduct ;
         return false;
     }
 
+    //end point 3
+
+    public ArrayList<Merchant> getMerchantsWithLowStock(int threshold) {
+        ArrayList<Merchant> result = new ArrayList<>();
+
+        for (MerchantStock ms : merchantStocks) {
+            if (ms.getStock() < threshold) {
+
+                for (Merchant m : serviceMerchant.merchants) {
+                    if (m.getId().equalsIgnoreCase(ms.getMerchantId())) {
+
+                        boolean alreadyAdded = false;
+                        for (Merchant existing : result) {
+                            if (existing.getId().equalsIgnoreCase(m.getId())) {
+                                alreadyAdded = true;
+                                break;
+                            }
+                        }
+
+                        if (!alreadyAdded) {
+                            result.add(m);
+                        }
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
 
     public ArrayList<MerchantStock> GetAllMerchantStock() {
         return merchantStocks;

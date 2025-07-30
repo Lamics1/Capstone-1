@@ -16,5 +16,5 @@ public class Merchant {
     @Size(min = 4, message = "must be more than 3 length long")
     private String name;
 
-    private boolean isBlocked = false;
+
 }

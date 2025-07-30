@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/product")
@@ -59,18 +61,6 @@ public class ControllerProduct {
         return ResponseEntity.status(404).body(new ApiResponse("Product not found"));
     }
 
-    // end point 1
-    @PostMapping("/rate/{id}")
-    public ResponseEntity<?> rateProduct(@PathVariable String id, @RequestParam double rating) {
-        if (rating < 0 || rating > 5)
-            return ResponseEntity.status(400).body(new ApiResponse("Rating must be between 0 and 5"));
-
-        boolean rated = serviceProduct.rateProduct(id, rating);
-        if (!rated)
-            return ResponseEntity.status(404).body(new ApiResponse("Product not found"));
-
-        return ResponseEntity.status(200).body(new ApiResponse("Product rated successfully"));
-    }
 
     @GetMapping("/rating/{id}")
     public ResponseEntity<?> getAverageRating(@PathVariable String id) {
@@ -81,14 +71,29 @@ public class ControllerProduct {
         return ResponseEntity.status(200).body("Average rating: " + avg);
 
     }
-    //endPoint5
-    @GetMapping("/random")
-    public ResponseEntity<?> getRandomProduct() {
-        Product product = serviceProduct.getRandomProduct();
-        if (product == null) {
+//end point 4
+
+    @GetMapping("/top-selling")
+    public ResponseEntity<?> getTop3SellingProducts() {
+        ArrayList<Product> result = serviceProduct.getTop3SellingProducts();
+
+        if (result.isEmpty()) {
             return ResponseEntity.status(404).body(new ApiResponse("No products found"));
         }
-        return ResponseEntity.status(200).body(product);
+
+        return ResponseEntity.status(200).body(result);
+    }
+
+//end point5
+    @GetMapping("/by-category-and-price")
+    public ResponseEntity<?> getProductsByCategoryAndPrice(@RequestParam String categoryId, @RequestParam double maxPrice) {
+
+        ArrayList<Product> result = serviceProduct.getProductsByCategoryAndPrice(categoryId, maxPrice);
+
+        if (result.isEmpty()) {
+            return ResponseEntity.status(404).body(new ApiResponse("No products found for this category and price"));
+        }
+        return ResponseEntity.status(200).body(result);
     }
 
 }

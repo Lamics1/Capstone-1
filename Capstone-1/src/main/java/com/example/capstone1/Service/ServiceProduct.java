@@ -1,6 +1,7 @@
 package com.example.capstone1.Service;
 import com.example.capstone1.Model.Category;
 import com.example.capstone1.Model.Product;
+import com.example.capstone1.Model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -69,42 +70,59 @@ public class ServiceProduct {
         return null;
     }
 
-    // end point 1
 
-    public boolean rateProduct(String productId, double rating) {
 
-        if (rating < 0 || rating > 5)
-            return false;
+    //end point 4
+    public ArrayList<Product> getTop3SellingProducts() {
 
-        for (Product p : products) {
-            if (p.getId().equals(productId)) {
-                p.setTotalRating(p.getTotalRating() + rating);
-                p.setRatingCount(p.getRatingCount() + 1);
-                return true;
+
+        ArrayList<Product> copy = new ArrayList<>(products);
+
+
+        for (int i = 0; i < copy.size() - 1; i++) {
+            for (int j = i + 1; j < copy.size(); j++) {
+                if (copy.get(j).getSoldCount() > copy.get(i).getSoldCount()) {
+
+                    Product temp = copy.get(i);
+                    copy.set(i, copy.get(j));
+                    copy.set(j, temp);
+                }
             }
         }
-        return false;
-    }
 
+        if (copy.size() <= 3) {
+            return copy;
+        }
+
+        ArrayList<Product> top3 = new ArrayList<>();
+        top3.add(copy.get(0));
+        top3.add(copy.get(1));
+        top3.add(copy.get(2));
+
+        return top3;
+    }
     public Double getAverageRating(String productId) {
         for (Product p : products) {
             if (p.getId().equals(productId)) {
-                if (p.getRatingCount() == 0) return 0.0;
+                if (p.getRatingCount() == 0)
+                    return 0.0;
                 return p.getTotalRating() / p.getRatingCount();
             }
         }
         return null;
     }
 
-    //endPoint5
+    //endpoint 5
+    public ArrayList<Product> getProductsByCategoryAndPrice(String categoryId, double maxPrice) {
+        ArrayList<Product> result = new ArrayList<>();
 
-    public Product getRandomProduct() {
-        if (products == null || products.isEmpty()) {
-            return null;
+        for (Product p : products) {
+            if (p.getCategoryID().equalsIgnoreCase(categoryId) && p.getPrice() <= maxPrice) {
+                result.add(p);
+            }
         }
-        Random random = new Random();
-        int index = random.nextInt(products.size());
-        return products.get(index);
+
+        return result;
     }
 
 }
